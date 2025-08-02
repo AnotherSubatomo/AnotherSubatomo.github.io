@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Bash v4.3+ compatible only.
 set -euo pipefail
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKDIR=$(pwd)
 
 function fatal { echo -e "\e[0;41m$*\e[0m" >&2; } #;; red print
 function warn { echo -e "\033[0;33m$*\033[0m" >&2; } #;; yellow print
@@ -17,19 +17,23 @@ function assert {
 }
 
 function compile_index {
-	"./render.sh" ../docs/index.html ../build/index.html
+	"./render.sh" ../build/index.html ../docs/index.html
 }
 
 function compile_posts {
-  mapfile -t POST_FILES < <(find -P ../docs/post -type f)
+  mapfile -t POST_FILES < <(find -P ../build/post -type f)
 
   for input_path in "${POST_FILES[@]}"; do
-    local output_path="../build/post/${input_path##*/}"
+    local output_path="../docs/post/${input_path##*/}"
     "./render.sh" "$input_path" "$output_path"
   done
 }
 
 function main {
+	[[ "${WORKDIR##*/}" != "compile" ]] && {
+		fatal "You can only run the build if the current directory is at /compile/."; exit 1;
+	};
+	
 	compile_index;
 	compile_posts;
 }
