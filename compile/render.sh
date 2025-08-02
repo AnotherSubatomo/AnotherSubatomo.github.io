@@ -87,8 +87,8 @@ function render_context_file {
 			else
 				if [[ $replacement =~ $'\n' ]]; then
 					replacement=$(printf "%s" "$replacement" | sed "2,\$s/^/${indent}/")
-        else
-          replacement="${indent}${replacement}"
+				else
+					replacement="${indent}${replacement}"
 				fi
 				RENDER+="${line//"<!--@${placeholder}-->"/"${replacement}"}"
 			fi
@@ -110,10 +110,11 @@ function main {
 	capture_context_values "$1" CONTEXTS
 	render_context_file CONTEXTS "$2"
 
-	# for placeholder in "${!CONTEXTS[@]}"; do
-	# 	value="${CONTEXTS["${placeholder}"]}"
-	# 	fatal "|${placeholder}|${value}|"
-	# done
+	#;; for debugging context files
+	for placeholder in "${!CONTEXTS[@]}"; do
+		value="${CONTEXTS["${placeholder}"]}"
+		fatal "|${placeholder}|${value}|"
+	done
 	
 	export CONTEXTS
 }

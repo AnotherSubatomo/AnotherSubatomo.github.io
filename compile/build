@@ -4,17 +4,6 @@ set -euo pipefail
 WORKDIR=$(pwd)
 
 function fatal { echo -e "\e[0;41m$*\e[0m" >&2; } #;; red print
-function warn { echo -e "\033[0;33m$*\033[0m" >&2; } #;; yellow print
-
-# Asserts that the required arguments are properly recieved
-function assert {
-	local index="$1"; shift
-	if [ "$#" -lt "$index" ]; then
-		echo "Usage: $0 <context-file> <output-path>" >&2
-		exit 1
-	fi
-	echo "${@:$index:1}"
-}
 
 function compile_index {
 	"./render.sh" ../build/index.html ../docs/index.html
