@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Bash v4.3+ compatible only.
+set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+function fatal { echo -e "\e[0;41m$*\e[0m" >&2; } #;; red print
+function warn { echo -e "\033[0;33m$*\033[0m" >&2; } #;; yellow print
+
+# Asserts that the required arguments are properly recieved
+function assert {
+	local index="$1"; shift
+	if [ "$#" -lt "$index" ]; then
+		echo "Usage: $0 <context-file> <output-path>" >&2
+		exit 1
+	fi
+	echo "${@:$index:1}"
+}
+
+function compile_index {
+	"./render.sh" ../docs/index.html ../build/index.html
+}
+
+function compile_posts {
+  mapfile -t POST_FILES < <(find -P ../docs/post -type f)
+
+  for input_path in "${POST_FILES[@]}"; do
+    local output_path="../build/post/${input_path##*/}"
+    "./render.sh" "$input_path" "$output_path"
+  done
+}
+
+function main {
+	compile_index;
+	compile_posts;
+}
+
+main;
